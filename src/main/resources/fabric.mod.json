@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "fishingbot",
+  "version": "${version}",
+  "name": "Fishingbot",
+  "description": "Yet another autofishing mod.",
+  "authors": [
+    "koutsie"
+  ],
+  "contact": {
+    "homepage": "https://the-sauna.icu/Fishingbot/",
+    "sources": "https://git.sr.ht/~koutsie/fishingbot",
+    "issues": "https://git.sr.ht/~koutsie/fishingbot"
+  },
+  "license": "MIT",
+  "icon": "assets/fishingbot/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "icu.thesauna.fishingbot.FishingbotClient"
+    ],
+    "modmenu": [
+      "icu.thesauna.fishingbot.integration.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.5",
+    "minecraft": "~1.21.10",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

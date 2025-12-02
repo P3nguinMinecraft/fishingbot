@@ -27,10 +27,19 @@ public class FishingbotClient implements ClientModInitializer {
                 return;
             }
 
+            Hand activeHand = mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND;
+            var rodStack = mainHand ? client.player.getMainHandStack() : client.player.getOffHandStack();
+
+            if (rodStack.getMaxDamage() - rodStack.getDamage() <= 1) {
+                wasCasting = false;
+                recastTimer = 0;
+                return;
+            }
+
             if (recastTimer > 0) {
                 recastTimer--;
                 if (recastTimer == 0) {
-                    doRightClick(client, mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND);
+                    doRightClick(client, activeHand);
                     wasCasting = true;
                 }
                 return;
@@ -41,8 +50,8 @@ public class FishingbotClient implements ClientModInitializer {
             if (bobber != null && !bobber.isRemoved()) {
                 wasCasting = true;
 
-                if (bobber.getVelocity().y < -0.08) {
-                    doRightClick(client, mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND);
+                if (bobber.fishTravelCountdown > 0) {
+                    doRightClick(client, activeHand);
                     recastTimer = 20;
                 }
             } else {

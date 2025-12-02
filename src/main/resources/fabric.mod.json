@@ -25,6 +25,7 @@
   },
   "mixins": [
   ],
+  "accessWidener": "fishingbot.accesswidener",
   "depends": {
     "fabricloader": ">=0.16.5",
     "minecraft": "~1.21.10",

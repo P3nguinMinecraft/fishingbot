@@ -1,6 +1,7 @@
 #!/bin/bash
-# dumb dumb, hello :)
 set -e
+
+rm -rf FishingbotBuild/*
 ./gradlew clean build
 
 mkdir -p FishingbotBuild

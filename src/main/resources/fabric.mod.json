@@ -3,7 +3,7 @@
   "id": "fishingbot",
   "version": "${version}",
   "name": "Fishingbot",
-  "description": "Yet another autofishing mod.",
+  "description": "This is Fishingbot: The No-Fuss, Just-Works Auto-Fishing Mod for Fabric!",
   "authors": [
     "koutsie"
   ],
@@ -24,6 +24,7 @@
     ]
   },
   "mixins": [
+    "fishingbot.mixins.json"
   ],
   "accessWidener": "fishingbot.accesswidener",
   "depends": {

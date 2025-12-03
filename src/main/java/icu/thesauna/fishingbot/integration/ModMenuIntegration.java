@@ -24,7 +24,7 @@ public class ModMenuIntegration implements ModMenuApi {
         @Override
         protected void init() {
             FishingbotConfig config = FishingbotConfig.get();
-            
+
             this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")),
                 button -> {

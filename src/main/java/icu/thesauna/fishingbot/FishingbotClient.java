@@ -3,6 +3,7 @@ package icu.thesauna.fishingbot;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import icu.thesauna.fishingbot.config.FishingbotConfig;
+import icu.thesauna.fishingbot.mixin.FishingBobberEntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.Items;
@@ -50,7 +51,7 @@ public class FishingbotClient implements ClientModInitializer {
             if (bobber != null && !bobber.isRemoved()) {
                 wasCasting = true;
 
-                if (bobber.fishTravelCountdown > 0) {
+                if (((FishingBobberEntityAccessor) bobber).getCaughtFish()) {
                     doRightClick(client, activeHand);
                     recastTimer = 20;
                 }

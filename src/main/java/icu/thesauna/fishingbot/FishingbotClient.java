@@ -44,6 +44,10 @@ public class FishingbotClient implements ClientModInitializer {
             if (recastTimer > 0) {
                 recastTimer--;
                 if (recastTimer == 0) {
+                    if (client.currentScreen != null) {
+                        recastTimer++;
+                        return;
+                    }
                     doRightClick(client, activeHand);
                     wasCasting = true;
                 }
@@ -55,7 +59,7 @@ public class FishingbotClient implements ClientModInitializer {
             if (bobber != null && !bobber.isRemoved()) {
                 wasCasting = true;
 
-                if (((FishingBobberEntityAccessor) bobber).getCaughtFish()) {
+                if (((FishingBobberEntityAccessor) bobber).getCaughtFish() && client.currentScreen == null) {
                     doRightClick(client, activeHand);
                     recastTimer = 20;
                 }
@@ -80,9 +84,9 @@ public class FishingbotClient implements ClientModInitializer {
     }
 
     private void doRightClick(MinecraftClient client, Hand hand) {
-        if (client.interactionManager != null) {
-            client.interactionManager.interactItem(client.player, hand);
-            client.player.swingHand(hand);
-        }
+        if (client.interactionManager == null) return;
+        if (client.currentScreen != null) return;
+        client.interactionManager.interactItem(client.player, hand);
+        client.player.swingHand(hand);
     }
 }

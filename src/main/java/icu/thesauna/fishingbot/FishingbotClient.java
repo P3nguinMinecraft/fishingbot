@@ -41,7 +41,13 @@ public class FishingbotClient implements ClientModInitializer {
                 return;
             }
 
+            FishingBobberEntity bobber = client.player.fishHook;
+
             if (recastTimer > 0) {
+                if (bobber != null && !bobber.isRemoved()){
+                    recastTimer = 0;
+                    return;
+                }
                 recastTimer--;
                 if (recastTimer == 0) {
                     if (client.currentScreen != null) {
@@ -53,8 +59,6 @@ public class FishingbotClient implements ClientModInitializer {
                 }
                 return;
             }
-
-            FishingBobberEntity bobber = client.player.fishHook;
 
             if (bobber != null && !bobber.isRemoved()) {
                 wasCasting = true;

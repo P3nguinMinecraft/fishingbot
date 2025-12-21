@@ -1,13 +1,17 @@
 package icu.thesauna.fishingbot;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import icu.thesauna.fishingbot.config.FishingbotConfig;
 import icu.thesauna.fishingbot.mixin.FishingBobberEntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class FishingbotClient implements ClientModInitializer {
     private boolean wasCasting = false;
@@ -58,6 +62,20 @@ public class FishingbotClient implements ClientModInitializer {
             } else {
                 wasCasting = false;
             }
+        });
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(literal("fishingbot")
+                .then(literal("toggle")
+                    .executes(context -> {
+                        FishingbotConfig config = FishingbotConfig.get();
+                        config.enabled = !config.enabled;
+                        config.save();
+                        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")));
+                        return 1;
+                    })
+                )
+            );
         });
     }
 

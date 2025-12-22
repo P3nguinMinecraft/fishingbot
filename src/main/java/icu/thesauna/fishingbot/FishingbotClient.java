@@ -1,5 +1,7 @@
 package icu.thesauna.fishingbot;
 
+import com.google.common.primitives.Shorts;
+import com.google.common.primitives.SignedBytes;
 import icu.thesauna.fishingbot.config.FishingbotConfigScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -10,6 +12,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -17,16 +22,18 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class FishingbotClient implements ClientModInitializer {
     private boolean openGui = false;
     private int recastTimer = 0;
+    private int swapTimer = 0;
 
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            FishingbotConfig config = FishingbotConfig.get();
             if (openGui){
                 client.setScreen(new FishingbotConfigScreen(client.currentScreen));
                 openGui = false;
             }
 
-            if (client.player == null || !FishingbotConfig.get().enabled)
+            if (client.player == null || !config.enabled)
                 return;
 
             boolean mainHand = client.player.getMainHandStack().isOf(Items.FISHING_ROD);
@@ -47,6 +54,13 @@ public class FishingbotClient implements ClientModInitializer {
 
             FishingBobberEntity bobber = client.player.fishHook;
 
+            if (swapTimer > 0) {
+                swapTimer--;
+                if (swapTimer == 0) {
+                    swapSlots(client, config.lureSlot - 1, config.reelSlot - 1);
+                }
+            }
+
             if (recastTimer > 0) {
                 if (bobber != null && !bobber.isRemoved()){
                     recastTimer = 0;
@@ -58,7 +72,14 @@ public class FishingbotClient implements ClientModInitializer {
                         recastTimer++;
                         return;
                     }
-                    doRightClick(client, activeHand);
+                    if (config.rodSwap){
+                        client.player.getInventory().setSelectedSlot(config.reelSlot - 1);
+                        swapSlots(client, config.lureSlot - 1, config.reelSlot - 1);
+                        doRightClick(client, activeHand);
+                        swapTimer = 5;
+                    }
+                    else
+                        doRightClick(client, activeHand);
                 }
                 return;
             }
@@ -82,6 +103,13 @@ public class FishingbotClient implements ClientModInitializer {
                 )
             );
         });
+    }
+
+    private void swapSlots(MinecraftClient client, int slotA, int slotB) {
+        int syncId = client.player.playerScreenHandler.syncId;
+        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
+        client.interactionManager.clickSlot(syncId, slotA+35, 0, SlotActionType.PICKUP, client.player);
+        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
     }
 
     private void doRightClick(MinecraftClient client, Hand hand) {

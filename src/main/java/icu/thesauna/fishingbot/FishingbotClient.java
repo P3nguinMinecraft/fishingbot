@@ -42,11 +42,11 @@ public class FishingbotClient implements ClientModInitializer {
             if (client.player == null || !config.enabled) return;
 
             if (swapTimer == 0 && config.rodSwap) {
-                swapSlots(client, config.castSlot, config.reelSlot);
+                client.player.getInventory().setSelectedSlot(config.reelSlot);
             }
 
             if (recastTimer == (config.reelDelay - config.swapDelay) && config.rodSwap) {
-                swapSlots(client, config.castSlot, config.reelSlot);
+                client.player.getInventory().setSelectedSlot(config.castSlot);
             }
 
             boolean mainHand = client.player.getMainHandStack().isOf(Items.FISHING_ROD);
@@ -67,14 +67,8 @@ public class FishingbotClient implements ClientModInitializer {
 
             if (recastTimer == 0) {
                 if (inGui(client)) return;
-                if (config.rodSwap){
-                    client.player.getInventory().setSelectedSlot(config.reelSlot);
-                    doRightClick(client, activeHand);
-                    swapTimer = config.swapDelay;
-                }
-                else {
-                    doRightClick(client, activeHand);
-                }
+                if (config.rodSwap) swapTimer = config.swapDelay;;
+                doRightClick(client, activeHand);
             }
 
             FishingBobberEntity bobber = client.player.fishHook;
@@ -98,13 +92,6 @@ public class FishingbotClient implements ClientModInitializer {
                 )
             );
         });
-    }
-
-    private void swapSlots(MinecraftClient client, int slotA, int slotB) {
-        int syncId = client.player.playerScreenHandler.syncId;
-        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
-        client.interactionManager.clickSlot(syncId, slotA+35, 0, SlotActionType.PICKUP, client.player);
-        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
     }
 
     private void doRightClick(MinecraftClient client, Hand hand) {

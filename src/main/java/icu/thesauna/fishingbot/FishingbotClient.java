@@ -15,7 +15,6 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 
 public class FishingbotClient implements ClientModInitializer {
     private boolean openGui = false;
-    private boolean wasCasting = false;
     private int recastTimer = 0;
 
     @Override
@@ -33,7 +32,6 @@ public class FishingbotClient implements ClientModInitializer {
             boolean offHand = client.player.getOffHandStack().isOf(Items.FISHING_ROD);
 
             if (!mainHand && !offHand) {
-                wasCasting = false;
                 recastTimer = 0;
                 return;
             }
@@ -42,7 +40,6 @@ public class FishingbotClient implements ClientModInitializer {
             var rodStack = mainHand ? client.player.getMainHandStack() : client.player.getOffHandStack();
 
             if (rodStack.getMaxDamage() - rodStack.getDamage() <= 1) {
-                wasCasting = false;
                 recastTimer = 0;
                 return;
             }
@@ -61,20 +58,16 @@ public class FishingbotClient implements ClientModInitializer {
                         return;
                     }
                     doRightClick(client, activeHand);
-                    wasCasting = true;
                 }
                 return;
             }
 
             if (bobber != null && !bobber.isRemoved()) {
-                wasCasting = true;
 
                 if (((FishingBobberEntityAccessor) bobber).getCaughtFish() && client.currentScreen == null) {
                     doRightClick(client, activeHand);
                     recastTimer = 20;
                 }
-            } else {
-                wasCasting = false;
             }
         });
 

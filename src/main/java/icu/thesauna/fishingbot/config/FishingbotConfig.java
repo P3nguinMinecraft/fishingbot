@@ -18,7 +18,7 @@ public class FishingbotConfig {
     public boolean enabled = false;
     public int reelDelay = 20;
     public boolean rodSwap = false;
-    public int lureSlot = 1;
+    public int castSlot = 1;
     public int reelSlot = 2;
     public int swapDelay = 5;
 

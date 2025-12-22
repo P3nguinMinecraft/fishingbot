@@ -51,13 +51,17 @@ public class FishingbotConfigScreen extends Screen {
                 y,
                 200,
                 20,
-                Text.of("Lure Slot (1–9 or None)")
+                Text.of("Lure Slot (1–9)")
         );
         lureSlotField.setText(String.valueOf(config.lureSlot));
         lureSlotField.setChangedListener(text -> {
-            config.lureSlot = parseUiSlot(text, config.lureSlot);
-            lureSlotField.setText(String.valueOf(config.lureSlot));
-            config.save();
+            int slot = parseUiSlot(text);
+            if (slot != -1) {
+                config.lureSlot = slot;
+                config.save();
+            }
+            else
+                lureSlotField.setText(String.valueOf(config.lureSlot));
         });
         this.addSelectableChild(lureSlotField);
         this.addDrawableChild(lureSlotField);
@@ -75,9 +79,13 @@ public class FishingbotConfigScreen extends Screen {
         );
         reelSlotField.setText(String.valueOf(config.reelSlot));
         reelSlotField.setChangedListener(text -> {
-            config.reelSlot = parseUiSlot(text, config.reelSlot);
-            reelSlotField.setText(String.valueOf(config.reelSlot));
-            config.save();
+            int slot = parseUiSlot(text);
+            if (slot != -1) {
+                config.reelSlot = slot;
+                config.save();
+            }
+            else
+                reelSlotField.setText(String.valueOf(config.reelSlot));
         });
         this.addSelectableChild(reelSlotField);
         this.addDrawableChild(reelSlotField);
@@ -91,7 +99,7 @@ public class FishingbotConfigScreen extends Screen {
         ).dimensions(centerX, y, 200, 20).build());
     }
 
-    private int parseUiSlot(String text, int fallback) {
+    private int parseUiSlot(String text) {
         try {
             int ui = Integer.parseInt(text);
             if (ui >= 1 && ui <= 9) {
@@ -99,7 +107,7 @@ public class FishingbotConfigScreen extends Screen {
             }
         } catch (NumberFormatException ignored) {}
 
-        return fallback;
+        return -1;
     }
     @Override
     public void close() {

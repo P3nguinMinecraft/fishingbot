@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import icu.thesauna.fishingbot.config.FishingbotConfig;
 import icu.thesauna.fishingbot.mixin.FishingBobberEntityAccessor;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
@@ -53,7 +54,7 @@ public class FishingbotClient implements ClientModInitializer {
                 }
                 recastTimer--;
                 if (recastTimer == 0) {
-                    if (client.currentScreen != null) {
+                    if (inGui(client)) {
                         recastTimer++;
                         return;
                     }
@@ -84,9 +85,13 @@ public class FishingbotClient implements ClientModInitializer {
     }
 
     private void doRightClick(MinecraftClient client, Hand hand) {
-        if (client.interactionManager == null) return;
-        if (client.currentScreen != null) return;
+        if (client.interactionManager == null || client.player == null) return;
+        if (inGui(client)) return;
         client.interactionManager.interactItem(client.player, hand);
         client.player.swingHand(hand);
+    }
+
+    private boolean inGui(MinecraftClient client){
+        return client.currentScreen != null && !(client.currentScreen instanceof ChatScreen);
     }
 }

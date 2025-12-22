@@ -2,7 +2,8 @@ package icu.thesauna.fishingbot.config;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 
 public class FishingbotConfigScreen extends Screen {
@@ -20,7 +21,7 @@ public class FishingbotConfigScreen extends Screen {
         int centerX = this.width / 2 - 100;
         int y = this.height / 2 - 90;
 
-        // Fishingbot toggle
+        // Fishingbot
         this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")),
                 button -> {
@@ -32,7 +33,7 @@ public class FishingbotConfigScreen extends Screen {
 
         y += 25;
 
-        // Rod Swap toggle
+        // Rod Swap
         this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Rod Swap: " + (config.rodSwap ? "ON" : "OFF")),
                 button -> {
@@ -42,69 +43,57 @@ public class FishingbotConfigScreen extends Screen {
                 }
         ).dimensions(centerX, y, 200, 20).build());
 
-        y += 30;
+        y += 35;
 
-        // Lure Slot
-        TextFieldWidget lureSlotField = new TextFieldWidget(
-                this.textRenderer,
-                centerX,
-                y,
-                200,
-                20,
-                Text.of("Lure Slot (1–9)")
-        );
-        lureSlotField.setText(String.valueOf(config.lureSlot));
-        lureSlotField.setChangedListener(text -> {
-            int slot = parseUiSlot(text);
-            if (slot != -1) {
+        // Lure Label
+        TextWidget lureLabel = new TextWidget(centerX + 65, y, 70, 20, Text.of("Lure Slot: " + config.lureSlot), this.textRenderer);
+
+        // Lure Slider
+        SliderWidget lureSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.lureSlot - 1) / 8.0) {
+            @Override
+            protected void updateMessage() {}
+
+            @Override
+            protected void applyValue() {
+                int slot = (int) Math.round(this.value * 8) + 1;
                 config.lureSlot = slot;
                 config.save();
+                lureLabel.setMessage(Text.of("Lure Slot: " + slot));
             }
-        });
-        this.addSelectableChild(lureSlotField);
-        this.addDrawableChild(lureSlotField);
-
-        y += 25;
-
-        // Reel Slot
-        TextFieldWidget reelSlotField = new TextFieldWidget(
-                this.textRenderer,
-                centerX,
-                y,
-                200,
-                20,
-                Text.of("Reel Slot (1–9)")
-        );
-        reelSlotField.setText(String.valueOf(config.reelSlot));
-        reelSlotField.setChangedListener(text -> {
-            int slot = parseUiSlot(text);
-            if (slot != -1) {
-                config.reelSlot = slot;
-                config.save();
-            }
-        });
-        this.addSelectableChild(reelSlotField);
-        this.addDrawableChild(reelSlotField);
+        };
+        this.addDrawableChild(lureSlider);
+        this.addDrawableChild(lureLabel);
 
         y += 35;
 
-        // Done
+        // Reel Label
+        TextWidget reelLabel = new TextWidget(centerX + 65, y, 70, 20, Text.of("Reel Slot: " + config.reelSlot), this.textRenderer);
+
+        // Reel Slider
+        SliderWidget reelSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelSlot - 1) / 8.0) {
+            @Override
+            protected void updateMessage() {}
+
+            @Override
+            protected void applyValue() {
+                int slot = (int) Math.round(this.value * 8) + 1;
+                config.reelSlot = slot;
+                config.save();
+                reelLabel.setMessage(Text.of("Reel Slot: " + slot));
+            }
+        };
+        this.addDrawableChild(reelSlider);
+        this.addDrawableChild(reelLabel);
+
+        y += 45;
+
+        // Done button
         this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Done"),
                 button -> this.close()
         ).dimensions(centerX, y, 200, 20).build());
     }
 
-    private int parseUiSlot(String text) {
-        try {
-            int ui = Integer.parseInt(text);
-            if (ui >= 1 && ui <= 9) {
-                return ui;
-            }
-        } catch (NumberFormatException ignored) {}
-
-        return -1;
-    }
     @Override
     public void close() {
         this.client.setScreen(parent);

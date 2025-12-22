@@ -19,7 +19,7 @@ public class FishingbotConfigScreen extends Screen {
         FishingbotConfig config = FishingbotConfig.get();
 
         int centerX = this.width / 2 - 100;
-        int y = this.height / 2 - 90;
+        int y = this.height / 2 - 150;
 
         // Fishingbot
         this.addDrawableChild(ButtonWidget.builder(
@@ -31,7 +31,27 @@ public class FishingbotConfigScreen extends Screen {
                 }
         ).dimensions(centerX, y, 200, 20).build());
 
-        y += 25;
+        y += 35;
+
+        // Reel Delay Label
+        TextWidget reelDelayLabel = new TextWidget(centerX + 65, y + 5, 70, 20, Text.of("Reel Delay: " + config.reelDelay + " ticks"), this.textRenderer);
+
+        // Reel Delay Slider
+        SliderWidget reelDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelDelay - 1) / 19.0) {
+            @Override
+            protected void updateMessage() {}
+
+            @Override
+            protected void applyValue() {
+                config.reelDelay = (int) Math.round(this.value * 19) + 1;
+                config.save();
+                reelDelayLabel.setMessage(Text.of("Reel Delay: " + config.reelDelay + " ticks"));
+            }
+        };
+        this.addDrawableChild(reelDelaySlider);
+        this.addDrawableChild(reelDelayLabel);
+
+        y += 35;
 
         // Rod Swap
         this.addDrawableChild(ButtonWidget.builder(
@@ -46,7 +66,7 @@ public class FishingbotConfigScreen extends Screen {
         y += 35;
 
         // Lure Label
-        TextWidget lureLabel = new TextWidget(centerX + 65, y, 70, 20, Text.of("Lure Slot: " + config.lureSlot), this.textRenderer);
+        TextWidget lureLabel = new TextWidget(centerX + 65, y + 5, 70, 20, Text.of("Lure Slot: " + config.lureSlot), this.textRenderer);
 
         // Lure Slider
         SliderWidget lureSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.lureSlot - 1) / 8.0) {
@@ -64,10 +84,10 @@ public class FishingbotConfigScreen extends Screen {
         this.addDrawableChild(lureSlider);
         this.addDrawableChild(lureLabel);
 
-        y += 35;
+        y += 25;
 
         // Reel Label
-        TextWidget reelLabel = new TextWidget(centerX + 65, y, 70, 20, Text.of("Reel Slot: " + config.reelSlot), this.textRenderer);
+        TextWidget reelLabel = new TextWidget(centerX + 65, y + 5, 70, 20, Text.of("Reel Slot: " + config.reelSlot), this.textRenderer);
 
         // Reel Slider
         SliderWidget reelSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelSlot - 1) / 8.0) {
@@ -84,6 +104,27 @@ public class FishingbotConfigScreen extends Screen {
         };
         this.addDrawableChild(reelSlider);
         this.addDrawableChild(reelLabel);
+
+        y += 35;
+
+        // Reel Delay Label
+        TextWidget swapDelayLabel = new TextWidget(centerX + 65, y + 5, 70, 20, Text.of("Swap Delay: " + config.swapDelay + " ticks"), this.textRenderer);
+
+        // Reel Delay Slider
+        SliderWidget swapDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.swapDelay - 1) / 19.0) {
+            @Override
+            protected void updateMessage() {}
+
+            @Override
+            protected void applyValue() {
+                config.swapDelay = Math.min((int) Math.round(this.value * 19) + 1, config.reelDelay);
+                config.save();
+                swapDelayLabel.setMessage(Text.of("Swap Delay: " + config.swapDelay + " ticks"));
+            }
+        };
+        this.addDrawableChild(swapDelaySlider);
+        this.addDrawableChild(swapDelayLabel);
+
 
         y += 45;
 

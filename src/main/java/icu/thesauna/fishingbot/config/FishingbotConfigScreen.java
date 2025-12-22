@@ -60,8 +60,6 @@ public class FishingbotConfigScreen extends Screen {
                 config.lureSlot = slot;
                 config.save();
             }
-            else
-                lureSlotField.setText(String.valueOf(config.lureSlot));
         });
         this.addSelectableChild(lureSlotField);
         this.addDrawableChild(lureSlotField);
@@ -84,8 +82,6 @@ public class FishingbotConfigScreen extends Screen {
                 config.reelSlot = slot;
                 config.save();
             }
-            else
-                reelSlotField.setText(String.valueOf(config.reelSlot));
         });
         this.addSelectableChild(reelSlotField);
         this.addDrawableChild(reelSlotField);

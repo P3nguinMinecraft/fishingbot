@@ -9,82 +9,81 @@ import icu.thesauna.fishingbot.mixin.FishingBobberEntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class FishingbotClient implements ClientModInitializer {
+    public static Logger LOGGER = LoggerFactory.getLogger("Fishingbot");
     private boolean openGui = false;
-    private int recastTimer = 0;
-    private int swapTimer = 0;
+    private int recastTimer = -1;
+    private int swapTimer = -1;
+    private int useDelay = -1;
 
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             FishingbotConfig config = FishingbotConfig.get();
+
+            swapTimer = Math.max(swapTimer - 1, -1);
+            recastTimer = Math.max(recastTimer - 1, -1);
+            useDelay = Math.max(useDelay - 1, -1);
+
             if (openGui){
                 client.setScreen(new FishingbotConfigScreen(client.currentScreen));
                 openGui = false;
             }
 
-            if (client.player == null || !config.enabled)
-                return;
+            if (client.player == null || !config.enabled) return;
+
+            if (swapTimer == 0 && config.rodSwap) {
+                swapSlots(client, config.lureSlot, config.reelSlot);
+            }
+
+            if (recastTimer == 0 && config.rodSwap) {
+                swapSlots(client, config.lureSlot, config.reelSlot);
+            }
 
             boolean mainHand = client.player.getMainHandStack().isOf(Items.FISHING_ROD);
             boolean offHand = client.player.getOffHandStack().isOf(Items.FISHING_ROD);
 
             if (!mainHand && !offHand) {
-                recastTimer = 0;
+                recastTimer = -1;
                 return;
             }
 
             Hand activeHand = mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND;
-            var rodStack = mainHand ? client.player.getMainHandStack() : client.player.getOffHandStack();
+            ItemStack rodStack = mainHand ? client.player.getMainHandStack() : client.player.getOffHandStack();
 
             if (rodStack.getMaxDamage() - rodStack.getDamage() <= 1) {
-                recastTimer = 0;
+                recastTimer = -1;
                 return;
+            }
+
+            if (recastTimer == 0) {
+                if (inGui(client)) return;
+                if (config.rodSwap){
+                    client.player.getInventory().setSelectedSlot(config.reelSlot);
+                    doRightClick(client, activeHand);
+                    swapTimer = 5;
+                }
+                else {
+                    doRightClick(client, activeHand);
+                }
             }
 
             FishingBobberEntity bobber = client.player.fishHook;
-
-            if (swapTimer > 0) {
-                swapTimer--;
-                if (swapTimer == 0) {
-                    swapSlots(client, config.lureSlot - 1, config.reelSlot - 1);
-                }
-            }
-
-            if (recastTimer > 0) {
-                if (bobber != null && !bobber.isRemoved()){
-                    recastTimer = 0;
-                    return;
-                }
-                recastTimer--;
-                if (recastTimer == 0) {
-                    if (inGui(client)) {
-                        recastTimer++;
-                        return;
-                    }
-                    if (config.rodSwap){
-                        client.player.getInventory().setSelectedSlot(config.reelSlot - 1);
-                        swapSlots(client, config.lureSlot - 1, config.reelSlot - 1);
-                        doRightClick(client, activeHand);
-                        swapTimer = 5;
-                    }
-                    else
-                        doRightClick(client, activeHand);
-                }
-                return;
-            }
-
-            if (bobber != null && !bobber.isRemoved()) {
-
-                if (((FishingBobberEntityAccessor) bobber).getCaughtFish() && client.currentScreen == null) {
+            if (bobber != null && !bobber.isRemoved() && useDelay < 0) {
+                recastTimer = -1;
+                if (((FishingBobberEntityAccessor) bobber).getCaughtFish() && !inGui(client)) {
                     doRightClick(client, activeHand);
                     recastTimer = 20;
+                    useDelay = 5;
                 }
             }
         });

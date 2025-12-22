@@ -53,12 +53,10 @@ public class FishingbotConfigScreen extends Screen {
                 20,
                 Text.of("Lure Slot (1–9 or None)")
         );
-        lureSlotField.setText(toUiSlot(config.lureSlot));
-        lureSlotField.setTextPredicate(text ->
-                text.equalsIgnoreCase("none") || text.matches("\\d*")
-        );
+        lureSlotField.setText(String.valueOf(config.lureSlot));
         lureSlotField.setChangedListener(text -> {
             config.lureSlot = parseUiSlot(text, config.lureSlot);
+            lureSlotField.setText(String.valueOf(config.lureSlot));
             config.save();
         });
         this.addSelectableChild(lureSlotField);
@@ -73,14 +71,12 @@ public class FishingbotConfigScreen extends Screen {
                 y,
                 200,
                 20,
-                Text.of("Reel Slot (1–9 or None)")
+                Text.of("Reel Slot (1–9)")
         );
-        reelSlotField.setText(toUiSlot(config.reelSlot));
-        reelSlotField.setTextPredicate(text ->
-                text.equalsIgnoreCase("none") || text.matches("\\d*")
-        );
+        reelSlotField.setText(String.valueOf(config.reelSlot));
         reelSlotField.setChangedListener(text -> {
             config.reelSlot = parseUiSlot(text, config.reelSlot);
+            reelSlotField.setText(String.valueOf(config.reelSlot));
             config.save();
         });
         this.addSelectableChild(reelSlotField);
@@ -96,24 +92,15 @@ public class FishingbotConfigScreen extends Screen {
     }
 
     private int parseUiSlot(String text, int fallback) {
-        if (text == null || text.isEmpty() || text.equalsIgnoreCase("none")) {
-            return -1;
-        }
-
         try {
             int ui = Integer.parseInt(text);
             if (ui >= 1 && ui <= 9) {
-                return ui - 1;
+                return ui;
             }
         } catch (NumberFormatException ignored) {}
 
         return fallback;
     }
-
-    private String toUiSlot(int slot) {
-        return slot == -1 ? "None" : String.valueOf(slot + 1);
-    }
-
     @Override
     public void close() {
         this.client.setScreen(parent);

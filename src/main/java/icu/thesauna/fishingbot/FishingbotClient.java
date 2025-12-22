@@ -42,11 +42,11 @@ public class FishingbotClient implements ClientModInitializer {
             if (client.player == null || !config.enabled) return;
 
             if (swapTimer == 0 && config.rodSwap) {
-                client.player.getInventory().setSelectedSlot(config.reelSlot);
+                client.player.getInventory().setSelectedSlot(config.reelSlot - 1);
             }
 
             if (recastTimer == (config.reelDelay - config.swapDelay) && config.rodSwap) {
-                client.player.getInventory().setSelectedSlot(config.castSlot);
+                client.player.getInventory().setSelectedSlot(config.castSlot - 1);
             }
 
             boolean mainHand = client.player.getMainHandStack().isOf(Items.FISHING_ROD);

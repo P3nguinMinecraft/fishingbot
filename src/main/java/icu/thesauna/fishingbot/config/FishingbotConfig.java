@@ -16,6 +16,9 @@ public class FishingbotConfig {
     private static FishingbotConfig instance;
 
     public boolean enabled = false;
+    public boolean rodSwap = false;
+    public int lureSlot = -1;
+    public int reelSlot = -1;
 
     public static FishingbotConfig get() {
         if (instance == null) {

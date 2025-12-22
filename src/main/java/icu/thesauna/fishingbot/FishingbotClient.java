@@ -1,5 +1,6 @@
 package icu.thesauna.fishingbot;
 
+import icu.thesauna.fishingbot.config.FishingbotConfigScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -8,18 +9,23 @@ import icu.thesauna.fishingbot.mixin.FishingBobberEntityAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.Items;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class FishingbotClient implements ClientModInitializer {
+    private boolean openGui = false;
     private boolean wasCasting = false;
     private int recastTimer = 0;
 
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (openGui){
+                client.setScreen(new FishingbotConfigScreen(client.currentScreen));
+                openGui = false;
+            }
+
             if (client.player == null || !FishingbotConfig.get().enabled)
                 return;
 
@@ -74,12 +80,9 @@ public class FishingbotClient implements ClientModInitializer {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(literal("fishingbot")
-                .then(literal("toggle")
+                .then(literal("config")
                     .executes(context -> {
-                        FishingbotConfig config = FishingbotConfig.get();
-                        config.enabled = !config.enabled;
-                        config.save();
-                        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")));
+                        openGui = true;
                         return 1;
                     })
                 )

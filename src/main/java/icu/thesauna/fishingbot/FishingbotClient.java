@@ -94,6 +94,14 @@ public class FishingbotClient implements ClientModInitializer {
         });
     }
 
+//    Can add a toggle / feature to use hotbar slot method or item method for attribute swap
+//    private void swapSlots(MinecraftClient client, int slotA, int slotB) {
+//        int syncId = client.player.playerScreenHandler.syncId;
+//        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
+//        client.interactionManager.clickSlot(syncId, slotA+35, 0, SlotActionType.PICKUP, client.player);
+//        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
+//    }
+
     private void doRightClick(MinecraftClient client, Hand hand) {
         if (client.interactionManager == null || client.player == null) return;
         if (inGui(client)) return;

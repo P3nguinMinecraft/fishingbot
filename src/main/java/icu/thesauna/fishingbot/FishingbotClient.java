@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class FishingbotClient implements ClientModInitializer {
     public static Logger LOGGER = LoggerFactory.getLogger("Fishingbot");
     private boolean openGui = false;
+    private int reelTimer = 0;
     private int recastTimer = -1;
     private int swapTimer = -1;
     private int useDelay = -1;
@@ -45,7 +45,7 @@ public class FishingbotClient implements ClientModInitializer {
                 client.player.getInventory().setSelectedSlot(config.reelSlot - 1);
             }
 
-            if (recastTimer == (config.reelDelay - config.swapDelay) && config.rodSwap) {
+            if (recastTimer == (config.castDelay - config.swapDelay) && config.rodSwap) {
                 client.player.getInventory().setSelectedSlot(config.castSlot - 1);
             }
 
@@ -69,14 +69,20 @@ public class FishingbotClient implements ClientModInitializer {
                 if (inGui(client)) return;
                 if (config.rodSwap) swapTimer = config.swapDelay;;
                 doRightClick(client, activeHand);
+                reelTimer = 0;
             }
 
             FishingBobberEntity bobber = client.player.fishHook;
             if (bobber != null && !bobber.isRemoved() && useDelay < 0) {
                 recastTimer = -1;
-                if (((FishingBobberEntityAccessor) bobber).getCaughtFish() && !inGui(client)) {
+                if (((FishingBobberEntityAccessor) bobber).getCaughtFish()) {
+                    if (reelTimer < config.reelDelay) {
+                        reelTimer++;
+                        return;
+                    }
+                    if (inGui(client)) return;
                     doRightClick(client, activeHand);
-                    recastTimer = config.reelDelay;
+                    recastTimer = config.castDelay;
                     useDelay = 5;
                 }
             }

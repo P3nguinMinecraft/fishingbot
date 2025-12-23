@@ -37,31 +37,57 @@ public class FishingbotConfigScreen extends Screen {
         TextWidget reelDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Reel Delay"), this.textRenderer);
         this.addDrawableChild(reelDelayLabel);
 
-        y+= 20;
+        y += 20;
 
         // Reel Delay Value Label
-        TextWidget reelDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.reelDelay + " ticks"), this.textRenderer);
-
-        // Predefine Sway Delay Value Label, y changed later
-        TextWidget swapDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.swapDelay + " ticks"), this.textRenderer);
+        TextWidget reelDelay = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.reelDelay + " ticks"), this.textRenderer);
 
         // Reel Delay Slider
-        SliderWidget reelDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelDelay - 1) / 19.0) {
+        SliderWidget reelDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelDelay) / 30.0) {
             @Override
             protected void updateMessage() {}
 
             @Override
             protected void applyValue() {
-                config.reelDelay = (int) Math.round(this.value * 19) + 1;
-                config.swapDelay = Math.min(config.swapDelay, config.reelDelay);
+                config.reelDelay = (int) Math.round(this.value * 30);
                 config.save();
-                reelDelayValueLabel.setMessage(Text.of(config.reelDelay + " ticks"));
+                reelDelay.setMessage(Text.of(config.reelDelay + " ticks"));
+            }
+        };
+        this.addDrawableChild(reelDelaySlider);
+        this.addDrawableChild(reelDelay);
+
+        y += 25;
+
+        // Cast Delay Label
+        TextWidget castDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Cast Delay"), this.textRenderer);
+        this.addDrawableChild(castDelayLabel);
+
+        y += 20;
+
+        // Cast Delay Value Label
+        TextWidget castDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.castDelay + " ticks"), this.textRenderer);
+
+        // Predefine Sway Delay Value Label, y changed later
+        TextWidget swapDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.swapDelay + " ticks"), this.textRenderer);
+
+        // Cast Delay Slider
+        SliderWidget castDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.castDelay) / 40.0) {
+            @Override
+            protected void updateMessage() {}
+
+            @Override
+            protected void applyValue() {
+                config.castDelay = (int) Math.round(this.value * 40);
+                config.swapDelay = Math.min(config.swapDelay, config.castDelay);
+                config.save();
+                castDelayValueLabel.setMessage(Text.of(config.castDelay + " ticks"));
                 swapDelayValueLabel.setMessage(Text.of(config.swapDelay + " ticks"));
                 // TODO: use FishingbotConfigScreen.this.clearAndInit(); or another method to refresh swapDelay slider
             }
         };
-        this.addDrawableChild(reelDelaySlider);
-        this.addDrawableChild(reelDelayValueLabel);
+        this.addDrawableChild(castDelaySlider);
+        this.addDrawableChild(castDelayValueLabel);
 
         y += 35;
 
@@ -133,20 +159,20 @@ public class FishingbotConfigScreen extends Screen {
         TextWidget swapDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Swap Delay"), this.textRenderer);
         this.addDrawableChild(swapDelayLabel);
 
-        y+= 20;
+        y += 20;
 
         // Swap Delay Value Label
         // already defined, just fixing y value
         swapDelayValueLabel.setY(y + 2);
 
         // Swap Delay Slider
-        SliderWidget swapDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.swapDelay - 1) / 19.0) {
+        SliderWidget swapDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.swapDelay) / 20.0) {
             @Override
             protected void updateMessage() {}
 
             @Override
             protected void applyValue() {
-                config.swapDelay = Math.min((int) Math.round(this.value * 19) + 1, config.reelDelay);
+                config.swapDelay = Math.min((int) Math.round(this.value * 20) + 1, config.castDelay);
                 config.save();
                 swapDelayValueLabel.setMessage(Text.of(config.swapDelay + " ticks"));
             }

@@ -34,7 +34,16 @@ public class FishingbotConfigScreen extends Screen {
         y += 35;
 
         // Reel Delay Label
-        TextWidget reelDelayLabel = new TextWidget(centerX + 65, y + 2, 70, 20, Text.of("Reel Delay: " + config.reelDelay + " ticks"), this.textRenderer);
+        TextWidget reelDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Reel Delay"), this.textRenderer);
+        this.addDrawableChild(reelDelayLabel);
+
+        y+= 20;
+
+        // Reel Delay Value Label
+        TextWidget reelDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.reelDelay + " ticks"), this.textRenderer);
+
+        // Predefine Sway Delay Value Label, y changed later
+        TextWidget swapDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.swapDelay + " ticks"), this.textRenderer);
 
         // Reel Delay Slider
         SliderWidget reelDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelDelay - 1) / 19.0) {
@@ -46,11 +55,13 @@ public class FishingbotConfigScreen extends Screen {
                 config.reelDelay = (int) Math.round(this.value * 19) + 1;
                 config.swapDelay = Math.min(config.swapDelay, config.reelDelay);
                 config.save();
-                reelDelayLabel.setMessage(Text.of("Reel Delay: " + config.reelDelay + " ticks"));
+                reelDelayValueLabel.setMessage(Text.of(config.reelDelay + " ticks"));
+                swapDelayValueLabel.setMessage(Text.of(config.swapDelay + " ticks"));
+                // TODO: use FishingbotConfigScreen.this.clearAndInit(); or another method to refresh swapDelay slider
             }
         };
         this.addDrawableChild(reelDelaySlider);
-        this.addDrawableChild(reelDelayLabel);
+        this.addDrawableChild(reelDelayValueLabel);
 
         y += 35;
 
@@ -67,7 +78,13 @@ public class FishingbotConfigScreen extends Screen {
         y += 35;
 
         // Cast Label
-        TextWidget castLabel = new TextWidget(centerX + 65, y + 2, 70, 20, Text.of("Cast Slot: " + config.castSlot), this.textRenderer);
+        TextWidget castLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Cast Slot"), this.textRenderer);
+        this.addDrawableChild(castLabel);
+
+        y += 20;
+
+        // Cast Value Label
+        TextWidget castValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(String.valueOf(config.castSlot)), this.textRenderer);
 
         // Cast Slider
         SliderWidget castSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.castSlot - 1) / 8.0) {
@@ -76,19 +93,24 @@ public class FishingbotConfigScreen extends Screen {
 
             @Override
             protected void applyValue() {
-                int slot = (int) Math.round(this.value * 8) + 1;
-                config.castSlot = slot;
+                config.castSlot = (int) Math.round(this.value * 8) + 1;
                 config.save();
-                castLabel.setMessage(Text.of("Cast Slot: " + slot));
+                castValueLabel.setMessage(Text.of(String.valueOf(config.castSlot)));
             }
         };
         this.addDrawableChild(castSlider);
-        this.addDrawableChild(castLabel);
+        this.addDrawableChild(castValueLabel);
 
         y += 25;
 
         // Reel Label
-        TextWidget reelLabel = new TextWidget(centerX + 65, y + 2, 70, 20, Text.of("Reel Slot: " + config.reelSlot), this.textRenderer);
+        TextWidget reelLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Reel Slot"), this.textRenderer);
+        this.addDrawableChild(reelLabel);
+
+        y += 20;
+
+        // Reel Value Label
+        TextWidget reelValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(String.valueOf(config.reelSlot)), this.textRenderer);
 
         // Reel Slider
         SliderWidget reelSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelSlot - 1) / 8.0) {
@@ -97,19 +119,25 @@ public class FishingbotConfigScreen extends Screen {
 
             @Override
             protected void applyValue() {
-                int slot = (int) Math.round(this.value * 8) + 1;
-                config.reelSlot = slot;
+                config.reelSlot = (int) Math.round(this.value * 8) + 1;
                 config.save();
-                reelLabel.setMessage(Text.of("Reel Slot: " + slot));
+                reelValueLabel.setMessage(Text.of(String.valueOf(config.reelSlot)));
             }
         };
         this.addDrawableChild(reelSlider);
-        this.addDrawableChild(reelLabel);
+        this.addDrawableChild(reelValueLabel);
 
         y += 35;
 
         // Swap Delay Label
-        TextWidget swapDelayLabel = new TextWidget(centerX + 65, y + 2, 70, 20, Text.of("Swap Delay: " + config.swapDelay + " ticks"), this.textRenderer);
+        TextWidget swapDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Swap Delay"), this.textRenderer);
+        this.addDrawableChild(swapDelayLabel);
+
+        y+= 20;
+
+        // Swap Delay Value Label
+        // already defined, just fixing y value
+        swapDelayValueLabel.setY(y + 2);
 
         // Swap Delay Slider
         SliderWidget swapDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.swapDelay - 1) / 19.0) {
@@ -120,11 +148,11 @@ public class FishingbotConfigScreen extends Screen {
             protected void applyValue() {
                 config.swapDelay = Math.min((int) Math.round(this.value * 19) + 1, config.reelDelay);
                 config.save();
-                swapDelayLabel.setMessage(Text.of("Swap Delay: " + config.swapDelay + " ticks"));
+                swapDelayValueLabel.setMessage(Text.of(config.swapDelay + " ticks"));
             }
         };
         this.addDrawableChild(swapDelaySlider);
-        this.addDrawableChild(swapDelayLabel);
+        this.addDrawableChild(swapDelayValueLabel);
 
 
         y += 45;

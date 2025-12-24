@@ -44,10 +44,18 @@ public class FishingbotClient implements ClientModInitializer {
             FishingBobberEntity bobber = client.player.fishHook;
 
             if (swapTimer == 0 && config.rodSwap) {
+                if (inGui(client)) {
+                    swapTimer++;
+                    return;
+                }
                 client.player.getInventory().setSelectedSlot(config.reelSlot - 1);
             }
 
             if (recastTimer == (config.castDelay - config.swapDelay) && config.rodSwap) {
+                if (inGui(client)) {
+                    recastTimer++;
+                    return;
+                }
                 if (bobber == null || bobber.isRemoved())
                     client.player.getInventory().setSelectedSlot(config.castSlot - 1);
             }
@@ -69,7 +77,10 @@ public class FishingbotClient implements ClientModInitializer {
             }
 
             if (recastTimer == 0) {
-                if (inGui(client)) return;
+                if (inGui(client)) {
+                    recastTimer++;
+                    return;
+                }
                 if (config.rodSwap) swapTimer = config.swapDelay;
                 if (bobber == null || bobber.isRemoved())
                     doRightClick(client, activeHand);

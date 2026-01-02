@@ -34,12 +34,13 @@ public class FishingbotClient implements ClientModInitializer {
             recastTimer = Math.max(recastTimer - 1, -1);
             useDelay = Math.max(useDelay - 1, -1);
 
-            if (openGui){
+            if (openGui) {
                 client.setScreen(new FishingbotConfigScreen(client.currentScreen));
                 openGui = false;
             }
 
-            if (client.player == null || !config.enabled) return;
+            if (client.player == null || !config.enabled)
+                return;
 
             FishingBobberEntity bobber = client.player.fishHook;
 
@@ -81,7 +82,8 @@ public class FishingbotClient implements ClientModInitializer {
                     recastTimer++;
                     return;
                 }
-                if (config.rodSwap) swapTimer = config.swapDelay;
+                if (config.rodSwap)
+                    swapTimer = config.swapDelay;
                 if (bobber == null || bobber.isRemoved())
                     doRightClick(client, activeHand);
                 reelTimer = 0;
@@ -94,7 +96,8 @@ public class FishingbotClient implements ClientModInitializer {
                         reelTimer++;
                         return;
                     }
-                    if (inGui(client)) return;
+                    if (inGui(client))
+                        return;
                     doRightClick(client, activeHand);
                     recastTimer = config.castDelay;
                     useDelay = 5;
@@ -104,32 +107,25 @@ public class FishingbotClient implements ClientModInitializer {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(literal("fishingbot")
-                .then(literal("config")
-                    .executes(context -> {
-                        openGui = true;
-                        return 1;
-                    })
-                )
-            );
+                    .then(literal("config")
+                            .executes(context -> {
+                                openGui = true;
+                                return 1;
+                            })));
         });
     }
 
-//    Can add a toggle / feature to use hotbar slot method or item method for attribute swap
-//    private void swapSlots(MinecraftClient client, int slotA, int slotB) {
-//        int syncId = client.player.playerScreenHandler.syncId;
-//        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
-//        client.interactionManager.clickSlot(syncId, slotA+35, 0, SlotActionType.PICKUP, client.player);
-//        client.interactionManager.clickSlot(syncId, slotB+35, 0, SlotActionType.PICKUP, client.player);
-//    }
-
     private void doRightClick(MinecraftClient client, Hand hand) {
-        if (client.interactionManager == null || client.player == null) return;
-        if (inGui(client)) return;
+        if (client.interactionManager == null || client.player == null)
+            return;
+        if (inGui(client))
+            return;
         client.interactionManager.interactItem(client.player, hand);
         client.player.swingHand(hand);
     }
 
-    private boolean inGui(MinecraftClient client){
-        return client.currentScreen != null && !(client.currentScreen instanceof ChatScreen);
+    private boolean inGui(MinecraftClient client) {
+        return client.currentScreen != null && !(client.currentScreen instanceof ChatScreen)
+                && !(client.currentScreen instanceof FishingbotConfigScreen);
     }
 }

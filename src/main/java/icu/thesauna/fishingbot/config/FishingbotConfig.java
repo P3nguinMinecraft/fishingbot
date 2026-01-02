@@ -16,12 +16,12 @@ public class FishingbotConfig {
     private static FishingbotConfig instance;
 
     public boolean enabled = false;
-    public int reelDelay = 10; // 0-30
-    public int castDelay = 20; // 0-40
+    public int reelDelay = 10;
+    public int castDelay = 20;
     public boolean rodSwap = false;
-    public int castSlot = 1; // 1-9
-    public int reelSlot = 2; // 1-9
-    public int swapDelay = 5; // 0-20 <= swapDelay
+    public int castSlot = 1;
+    public int reelSlot = 2;
+    public int swapDelay = 5;
 
     public static FishingbotConfig get() {
         if (instance == null) {
@@ -41,7 +41,7 @@ public class FishingbotConfig {
         }
         return new FishingbotConfig();
     }
-    
+
     public static void validate() {
         if (instance == null) {
             instance = load();
@@ -52,7 +52,7 @@ public class FishingbotConfig {
         instance.reelSlot = clamp(instance.reelSlot, 1, 9);
         instance.swapDelay = clamp(instance.swapDelay, 0, 20);
     }
-    
+
     private static int clamp(int val, int min, int max) {
         return Math.min(Math.max(val, min), max);
     }

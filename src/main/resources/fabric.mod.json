@@ -2,18 +2,6 @@
   "schemaVersion": 1,
   "id": "fishingbot",
   "version": "${version}",
-  "name": "Fishingbot",
-  "description": "This is Fishingbot: The No-Fuss, Just-Works Auto-Fishing Mod for Fabric!",
-  "authors": [
-    "koutsie"
-  ],
-  "contact": {
-    "homepage": "https://the-sauna.icu/Fishingbot/",
-    "sources": "https://git.sr.ht/~koutsie/fishingbot",
-    "issues": "https://git.sr.ht/~koutsie/fishingbot"
-  },
-  "license": "MIT",
-  "icon": "assets/fishingbot/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -29,11 +17,27 @@
   "accessWidener": "fishingbot.accesswidener",
   "depends": {
     "fabricloader": ">=0.16.5",
-    "minecraft": "~1.21.10",
+    "minecraft": "~1.21.11",
     "java": ">=21",
     "fabric-api": "*"
   },
   "suggests": {
     "modmenu": "*"
+  },
+  "name": "Fishingbot",
+  "description": "This is Fishingbot: The No-Fuss, Just-Works Auto-Fishing Mod for Fabric!",
+  "authors": [
+    "koutsie",
+    "P3nguinMinecraft"
+  ],
+  "contact": {
+    "homepage": "https://the-sauna.icu/Fishingbot/",
+    "sources": "https://git.sr.ht/~koutsie/fishingbot",
+    "issues": "https://git.sr.ht/~koutsie/fishingbot"
+  },
+  "license": "MIT",
+  "icon": "assets/fishingbot/icon.png",
+  "custom": {
+    "credits": "P3nguinMinecraft - https://github.com/P3nguinMinecraft"
   }
 }

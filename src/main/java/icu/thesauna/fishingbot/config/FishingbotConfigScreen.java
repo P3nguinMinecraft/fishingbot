@@ -18,10 +18,42 @@ public class FishingbotConfigScreen extends Screen {
     public void init() {
         FishingbotConfig config = FishingbotConfig.get();
 
-        int centerX = this.width / 2 - 100;
-        int y = this.height / 2 - 150;
+        int buttonWidth = Math.min(200, Math.max(80, this.width - 40));
+        int centerX = (this.width - buttonWidth) / 2;
+        int labelWidth = Math.max(50, buttonWidth - 30);
+        int topSafe = 20;
+        int bottomSafe = 20;
+        int maxAvailable = Math.max(50, this.height - topSafe - bottomSafe);
 
-        // Fishingbot
+        int estimate = 0;
+        estimate += 20;
+        if (config.enabled) {
+            estimate += 35;
+            estimate += 20;
+            estimate += 20;
+            estimate += 25;
+            estimate += 20;
+            estimate += 20;
+            estimate += 35;
+        }
+        if (config.enabled && config.rodSwap) {
+            estimate += 35;
+            estimate += 20;
+            estimate += 20;
+            estimate += 25;
+            estimate += 20;
+            estimate += 20;
+            estimate += 35;
+        }
+        estimate += 45;
+        estimate += 20;
+
+        double scale = 1.0;
+        if (estimate > maxAvailable)
+            scale = (double) maxAvailable / (double) estimate;
+
+        int y = topSafe + Math.max(0, (int) Math.round((this.height - topSafe - bottomSafe - estimate * scale) / 2.0));
+
         this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")),
                 button -> {
@@ -29,26 +61,26 @@ public class FishingbotConfigScreen extends Screen {
                     config.save();
                     button.setMessage(Text.of("Fishingbot: " + (config.enabled ? "ON" : "OFF")));
                     FishingbotConfigScreen.this.clearAndInit();
-                }
-        ).dimensions(centerX, y, 200, 20).build());
+                }).dimensions(centerX, y, buttonWidth, 20).build());
 
-        // Predefine Sway Delay Value Label, y changed later
-        TextWidget swapDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.swapDelay + " ticks"), this.textRenderer);
+        TextWidget swapDelayValueLabel = new TextWidget(centerX + 10, y + 2, labelWidth, 20,
+                Text.of(config.swapDelay + " ticks"), this.textRenderer);
 
         if (config.enabled) {
-            y += 35;
+            y += (int) Math.round(35 * scale);
 
-            // Reel Delay Label
-            TextWidget reelDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Reel Delay"), this.textRenderer);
+            TextWidget reelDelayLabel = new TextWidget(centerX + 10, y, labelWidth, 20, Text.of("Reel Delay"),
+                    this.textRenderer);
             this.addDrawableChild(reelDelayLabel);
 
-            y += 20;
+            y += (int) Math.round(20 * scale);
 
-            // Reel Delay Value Label
-            TextWidget reelDelay = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.reelDelay + " ticks"), this.textRenderer);
+            TextWidget reelDelay = new TextWidget(centerX + 10, y + 2, labelWidth, 20,
+                    Text.of(config.reelDelay + " ticks"),
+                    this.textRenderer);
 
-            // Reel Delay Slider
-            SliderWidget reelDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelDelay) / 30.0) {
+            SliderWidget reelDelaySlider = new SliderWidget(centerX, y, buttonWidth, 20, Text.of(""),
+                    (config.reelDelay) / 30.0) {
                 @Override
                 protected void updateMessage() {
                 }
@@ -63,19 +95,19 @@ public class FishingbotConfigScreen extends Screen {
             this.addDrawableChild(reelDelaySlider);
             this.addDrawableChild(reelDelay);
 
-            y += 25;
+            y += (int) Math.round(25 * scale);
 
-            // Cast Delay Label
-            TextWidget castDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Cast Delay"), this.textRenderer);
+            TextWidget castDelayLabel = new TextWidget(centerX + 10, y, labelWidth, 20, Text.of("Cast Delay"),
+                    this.textRenderer);
             this.addDrawableChild(castDelayLabel);
 
-            y += 20;
+            y += (int) Math.round(20 * scale);
 
-            // Cast Delay Value Label
-            TextWidget castDelayValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(config.castDelay + " ticks"), this.textRenderer);
+            TextWidget castDelayValueLabel = new TextWidget(centerX + 10, y + 2, labelWidth, 20,
+                    Text.of(config.castDelay + " ticks"), this.textRenderer);
 
-            // Cast Delay Slider
-            SliderWidget castDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.castDelay) / 40.0) {
+            SliderWidget castDelaySlider = new SliderWidget(centerX, y, buttonWidth, 20, Text.of(""),
+                    (config.castDelay) / 40.0) {
                 @Override
                 protected void updateMessage() {
                 }
@@ -87,15 +119,13 @@ public class FishingbotConfigScreen extends Screen {
                     config.save();
                     castDelayValueLabel.setMessage(Text.of(config.castDelay + " ticks"));
                     swapDelayValueLabel.setMessage(Text.of(config.swapDelay + " ticks"));
-                    // TODO: use FishingbotConfigScreen.this.clearAndInit(); or another method to refresh swapDelay slider
                 }
             };
             this.addDrawableChild(castDelaySlider);
             this.addDrawableChild(castDelayValueLabel);
 
-            y += 35;
+            y += (int) Math.round(35 * scale);
 
-            // Rod Swap
             this.addDrawableChild(ButtonWidget.builder(
                     Text.of("Rod Swap: " + (config.rodSwap ? "ON" : "OFF")),
                     button -> {
@@ -103,24 +133,23 @@ public class FishingbotConfigScreen extends Screen {
                         config.save();
                         button.setMessage(Text.of("Rod Swap: " + (config.rodSwap ? "ON" : "OFF")));
                         FishingbotConfigScreen.this.clearAndInit();
-                    }
-            ).dimensions(centerX, y, 200, 20).build());
+                    }).dimensions(centerX, y, buttonWidth, 20).build());
         }
 
         if (config.enabled && config.rodSwap) {
-            y += 35;
+            y += (int) Math.round(35 * scale);
 
-            // Cast Label
-            TextWidget castLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Cast Slot"), this.textRenderer);
+            TextWidget castLabel = new TextWidget(centerX + 10, y, labelWidth, 20, Text.of("Cast Slot"),
+                    this.textRenderer);
             this.addDrawableChild(castLabel);
 
-            y += 20;
+            y += (int) Math.round(20 * scale);
 
-            // Cast Value Label
-            TextWidget castValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(String.valueOf(config.castSlot)), this.textRenderer);
+            TextWidget castValueLabel = new TextWidget(centerX + 10, y + 2, labelWidth, 20,
+                    Text.of(String.valueOf(config.castSlot)), this.textRenderer);
 
-            // Cast Slider
-            SliderWidget castSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.castSlot - 1) / 8.0) {
+            SliderWidget castSlider = new SliderWidget(centerX, y, buttonWidth, 20, Text.of(""),
+                    (config.castSlot - 1) / 8.0) {
                 @Override
                 protected void updateMessage() {
                 }
@@ -135,19 +164,19 @@ public class FishingbotConfigScreen extends Screen {
             this.addDrawableChild(castSlider);
             this.addDrawableChild(castValueLabel);
 
-            y += 25;
+            y += (int) Math.round(25 * scale);
 
-            // Reel Label
-            TextWidget reelLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Reel Slot"), this.textRenderer);
+            TextWidget reelLabel = new TextWidget(centerX + 10, y, labelWidth, 20, Text.of("Reel Slot"),
+                    this.textRenderer);
             this.addDrawableChild(reelLabel);
 
-            y += 20;
+            y += (int) Math.round(20 * scale);
 
-            // Reel Value Label
-            TextWidget reelValueLabel = new TextWidget(centerX + 10, y + 2, 70, 20, Text.of(String.valueOf(config.reelSlot)), this.textRenderer);
+            TextWidget reelValueLabel = new TextWidget(centerX + 10, y + 2, labelWidth, 20,
+                    Text.of(String.valueOf(config.reelSlot)), this.textRenderer);
 
-            // Reel Slider
-            SliderWidget reelSlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.reelSlot - 1) / 8.0) {
+            SliderWidget reelSlider = new SliderWidget(centerX, y, buttonWidth, 20, Text.of(""),
+                    (config.reelSlot - 1) / 8.0) {
                 @Override
                 protected void updateMessage() {
                 }
@@ -162,20 +191,18 @@ public class FishingbotConfigScreen extends Screen {
             this.addDrawableChild(reelSlider);
             this.addDrawableChild(reelValueLabel);
 
-            y += 35;
+            y += (int) Math.round(35 * scale);
 
-            // Swap Delay Label
-            TextWidget swapDelayLabel = new TextWidget(centerX + 10, y, 70, 20, Text.of("Swap Delay"), this.textRenderer);
+            TextWidget swapDelayLabel = new TextWidget(centerX + 10, y, labelWidth, 20, Text.of("Swap Delay"),
+                    this.textRenderer);
             this.addDrawableChild(swapDelayLabel);
 
-            y += 20;
+            y += (int) Math.round(20 * scale);
 
-            // Swap Delay Value Label
-            // already defined, just fixing y value
             swapDelayValueLabel.setY(y + 2);
 
-            // Swap Delay Slider
-            SliderWidget swapDelaySlider = new SliderWidget(centerX, y, 200, 20, Text.of(""), (config.swapDelay) / 20.0) {
+            SliderWidget swapDelaySlider = new SliderWidget(centerX, y, buttonWidth, 20, Text.of(""),
+                    (config.swapDelay) / 20.0) {
                 @Override
                 protected void updateMessage() {
                 }
@@ -191,13 +218,11 @@ public class FishingbotConfigScreen extends Screen {
             this.addDrawableChild(swapDelayValueLabel);
         }
 
-        y += 45;
+        y += (int) Math.round(45 * scale);
 
-        // Done button
         this.addDrawableChild(ButtonWidget.builder(
                 Text.of("Done"),
-                button -> this.close()
-        ).dimensions(centerX, y, 200, 20).build());
+                button -> this.close()).dimensions(centerX, y, buttonWidth, 20).build());
     }
 
     @Override
